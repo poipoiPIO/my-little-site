@@ -1,0 +1,5 @@
+.paragraph { margin: 5px 0px 10px 13px; }
+html { background-image: url('./images/bg.png'); background-repeat: repeat; }
+body { font-family: helvetica; font-size: 18px; margin: 5% 3%; padding: 9px 5px 15px; background-color: #ffffff; opacity: 0.8; cursor: url('./images/cursor.png'); }
+.logo { text-align: left; }
+.sharp { color: blue; }

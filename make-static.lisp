@@ -1,56 +1,57 @@
 (in-package cl-user)
-(ql:quickload '(:clack :cl-css :spinneret :ningle))
+(ql:quickload '(:cl-css :spinneret :str))
 
-(defvar *app*  (make-instance 'ningle:<app>))
-(defparameter *port* 8000)
-(defparameter *my-contacts* '(("github.com/poipoiPIO" . "Github | " ) ("@lilyape" . "Telegram")))
-(defparameter *content* '(
-  ("About me:" . "Hi-hi there!~ My name is Kirill and I'm another one novice programmer.")
+(defparameter *my-contacts* 
+  '(("github.com/poipoiPIO" . "Github | " ) ("@lilyape" . "Telegram | ") ("lappee@yahoo.com" . "Email!")))
+(defparameter *content* 
+  '(("About me:" . "Poi Poi cotton clay pills")
   ("Intrested in:" . #("Poi poi" "Kitty Cat"))))
 
-(defparameter *html-color* "#2F2D2E")
-(defparameter *main-section-color* "#2F2D2E")
-(defparameter *text-color* "#2F2D2E")
+(defparameter *css* (cl-css:css 
+              '((.paragraph :margin "5px 0px 10px 13px") 
 
-(defparameter *paragraph-style* 
-  (cl-css:inline-css '(:margin 5px 0px 10px 13px)))
+                (html :background-image "url('./images/bg.png')"
+                      :background-repeat repeat) 
 
-(defparameter *html-style* 
-  (cl-css:inline-css '(:background-color *html-color*)))
+                (body :font-family Helvetica 
+                      :font-size 18px 
+                      :margin "5% 3%"
+                      :padding "9px 5px 15px" 
+                      :background-color "#ffffff"
+                      :opacity "0.8"
+                      :cursor "url('./images/cursor.png')")
 
-(defparameter *logo-style* 
-  (cl-css:inline-css '(:text-align center)))
+                (.logo :text-align left)
+                (.sharp :color blue))))
 
-(defparameter *sharp-style* 
-  (cl-css:inline-css '(:color blue)))
-
-(defparameter *body-style* 
-  (cl-css:inline-css '(:color *text-color* :font-family Helvetica 
-                       :font-size 18px :margin-top 3% :margin-bottom 3% 
-                       :margin-left 5% :margin-right 5% :padding-top 10px 
-                       :padding-bottom 15px :padding-left 5px :padding-right 5px
-                       :background-color *main-secrion-color* :opacity 0.8)))
-
-(defvar html (spinneret:with-html-string 
-  (:html :style *html-style* 
-    (:body :style *body-style* (:div :class :header
-      (:span :class :center :style *logo-style*
+(defvar *html* (spinneret:with-html-string 
+  (:html 
+   (:head 
+     (:meta :attrs (list :charset "utf-8")) 
+     (:title "lappee-site<3")
+     (:meta :attrs (list :rel "stylesheet" :href #p"main.css")))
+   ;; ---------Head-part-ends-----------
+    (:body
+   ;; ---------Header-part--------------
+    (:header (:span.logo
         (:h1 "Lappely <3~")
         (:p (:sub 
           (loop for item in *my-contacts* do 
-            (:a :href (car item) (cdr item)))))))
-    (:div :class :main
-        (loop for item in *content* do
-              (:div :class :text :style *paragraph-style*
-                (:h4 (:span :style *sharp-style* "#")
-                     (car item))
-                (if (and (not (simple-string-p (cdr item))) (vectorp (cdr item)))
-                    (:ul 
-                    (loop for paragraph across (cdr item) do
-                          (:li paragraph)))
-                    (:p (cdr item))))))))))
+            (:a :href (car item) 
+                      (cdr item)))))))
+  ;; --------Header-part-end-------------
+  ;; --------Section-part----------------
+    (:section (loop for item in *content* do
+      (:div.paragraph
+        (:h4 (:span.sharp "#") 
+             (car item)) ; car is the head of paragraph 
+        (if (and (not (simple-string-p (cdr item))) (vectorp (cdr item)))
+           (:ul (loop for paragraph across (cdr item) do (:li paragraph)))
+           (:p (cdr item))))))))))
 
-(clack:clackup *app* :port *port*)
+(defun make-markup ()
+  (progn 
+    (str:to-file "./static/index.html" *html*)
+    (str:to-file "./static/main.css" *css*)))
 
-(setf (ningle:route *app* "/") html)
-
+(make-markup)
