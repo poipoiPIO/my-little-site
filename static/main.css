@@ -1,6 +1,21 @@
-.paragraph { margin: 5px 0px 10px 13px; }
-html { background-image: url('./images/bg.png'); background-repeat: repeat; }
-body { font-family: helvetica; font-size: 18px; margin: 5% 3%; padding: 9px 5px 15px; background-color: #ffffe0; opacity: 0.8; border: 1rem ridge rgba(211, 220, 50, .6); cursor: url('./images/cursor.png'); }
-.avatar-image { border: 1rem ridge rgba(211, 220, 50, .6); height: 20rem; width: 20rem; }
+@font-face { font-family: gdk9; src: url(./fonts/gdk9.ttf); }
+@font-face { font-family: pf7; src: url(./fonts/pf7.ttf); }
+@font-face { font-family: mplus; src: url(./fonts/mplus.ttf); }
+html { background-image: url('./images/bg.png'); padding: 5% 5%; background-repeat: repeat; }
+body { font-family: mplus; font-size: 18px; margin: 4% 3%; padding: 9px 5px 15px; background-color: #ffffe0; opacity: 0.8; border: 0.75rem ridge rgba(211, 220, 50, .6); }
+header { display: flex; justify-content: space-between; flex-direction: row; padding: 0.5rem 1rem; font-family: pf7; }
+header>.avatar>img { width: 16rem; border: 1rem ridge rgba(211, 220, 50, .6); }
+footer { text-align: right; }
+a { text-decoration: none; }
+h1 { margin-bottom: 8px; }
+h4 { margin-bottom: 0.3rem; }
+.width-100 { width: 100%; }
+.width-75 { width: 75%; }
 .logo { text-align: left; }
 .sharp { color: blue; }
+.paragraph { margin: 5px 0px 10px 13px; font-family: gdk9; }
+.paragraph>p { margin-left: 2rem; text-indent: 2em; margin-right: 2rem; }
+::marker { color: grey; }
+@media only screen and (min-width: 860px) { body { width: 820px; } header>.avatar>img { width: 16rem; border: 1rem ridge rgba(211, 220, 50, .6); } }
+@media only screen and (max-width: 640px) { header>.spacer { width: 40%; } header>.avatar>img { width: 12rem; border: 1rem ridge rgba(211, 220, 50, .6); } }
+@media only screen and (max-width: 420px) { body { padding-top: 0rem; } header { text-align: center; } header>.avatar>img { width: 100%; align-self: center; border: 1rem ridge rgba(211, 220, 50, .6); margin-left: 1.5rem; } header { display: flex; flex-direction: column; padding: 0.5rem; font-family: pf7; } .spacer { height: 1rem; } }
