@@ -4,7 +4,7 @@
 (defparameter *my-contacts* 
   '(("github.com/poipoiPIO" . "Github | " ) ("@lilyape" . "Telegram | ") ("lappee@yahoo.com" . "Email!")))
 (defparameter *content* 
-  '(("About me:" . "Poi Poi cotton clay pills")
+  '(("About me:" . "Poi Poi cotton clay pills cat pool iter pill sa ola pie de ramin")
   ("Intrested in:" . #("Poi poi" "Kitty Cat"))))
 
 (defparameter *css* (cl-css:css 
@@ -17,11 +17,16 @@
                       :font-size 18px 
                       :margin "5% 3%"
                       :padding "9px 5px 15px" 
-                      :background-color "#ffffff"
+                      :background-color "#ffffe0"
                       :opacity "0.8"
+                      :border "1rem ridge rgba(211, 220, 50, .6)"
                       :cursor "url('./images/cursor.png')")
 
-                (.logo :text-align left)
+                (.avatar-image :border "1rem ridge rgba(211, 220, 50, .6)"
+                               :height 20rem
+                               :width  20rem)
+
+                (.logo :text-align "left")
                 (.sharp :color blue))))
 
 (defvar *html* (spinneret:with-html-string 
@@ -29,16 +34,19 @@
    (:head 
      (:meta :attrs (list :charset "utf-8")) 
      (:title "lappee-site<3")
-     (:meta :attrs (list :rel "stylesheet" :href #p"main.css")))
+     (:link :attrs (list :type "text/css" :rel "stylesheet" :href "./main.css")))
    ;; ---------Head-part-ends-----------
     (:body
    ;; ---------Header-part--------------
-    (:header (:span.logo
+    (:header 
+      (:div.logo
+        (:img.avatar-image :attrs (list :align "right" :src "./images/avatar.jpg" :alt "Profile image"))
         (:h1 "Lappely <3~")
-        (:p (:sub 
+        (:sub 
           (loop for item in *my-contacts* do 
             (:a :href (car item) 
-                      (cdr item)))))))
+                      (cdr item))))))
+
   ;; --------Header-part-end-------------
   ;; --------Section-part----------------
     (:section (loop for item in *content* do
