@@ -1,8 +1,9 @@
 (in-package cl-user)
 (ql:quickload '(:cl-css :spinneret :str))
 
-(defparameter *my-contacts* 
-  '(("github.com/poipoiPIO" . "Github | " ) ("@lilyape" . "Telegram | ") ("lappee@yahoo.com" . "Email!")))
+(defparameter *my-contacts* '(("github.com/poipoiPIO" . "Github | " ) 
+                              ("@lilyape" . "Telegram | ") 
+                              ("lappee@yahoo.com" . "Email!")))
 
 (defparameter *content* 
   '(("About me:"     . "Just another web-backend developer. I like lisp, aspecially Common lisp,
@@ -29,7 +30,7 @@
 
                 (body :font-family mplus 
                       :font-size 18px 
-                      :margin "4% 3%"
+                      :margin "4% auto"
                       :padding "9px 5px 15px" 
                       :background-color "#ffffe0"
                       :opacity "0.8"
@@ -74,6 +75,9 @@
                 ("@media only screen and (max-width: 420px)" 
                   (body :padding-top 0rem)
                   (header :text-align center)
+                  (.paragraph>p :margin-left 0rem
+                                :text-indent 2em
+                                :margin-right 1rem)
                   (header>.avatar>img :width 100%
                                       :align-self center
                                       :border "1rem ridge rgba(211, 220, 50, .6)"
@@ -99,12 +103,13 @@
     (:header 
       (:div.info.width-100
         (:h1 "Lappely <3~")
-        (:sub (:b (:em "Nyahoi~ y.o | He/Him | Rus") (:br)
+        ;(:sub 
+          (:b (:em "Nyahoi~ y.o | He/Him | Rus") (:br)
               "☃ An another one cute software developer~") (:br) (:br)
           (loop for item in *my-contacts* do 
             (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
                         (format nil "mailto: ~A" (car item)) 
-                        (car item)) (cdr item)))))
+                        (car item)) (cdr item))))
       (:div.spacer.width-100)
       (:div.avatar.width-75 
         (:img.avatar-image :attrs (list :src "https://github.com/poipoiPIO.png" :alt "Profile image"))))
