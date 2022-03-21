@@ -1,9 +1,9 @@
 (in-package cl-user)
 (ql:quickload '(:cl-css :spinneret :str))
 
-(defparameter *my-contacts* '(("github.com/poipoiPIO" . "Github | " ) 
-                              ("@lilyape" . "Telegram | ") 
-                              ("lappee@yahoo.com" . "Email!")))
+(defparameter *my-contacts* '(("https://www.github.com/poipoiPIO" . "Github | " ) 
+                              ("https://t.me/lilyape"             . "Telegram | ") 
+                              ("lappee@yahoo.com"                 . "Email!")))
 
 (defparameter *content* 
   '(("About me:"     . "Just another web-backend developer. I like lisp, aspecially Common lisp,
@@ -59,20 +59,32 @@
                 (.paragraph>p :margin-left 2rem
                               :text-indent 2em
                               :margin-right 2rem)
+                (.cattoes :height 4.2rem
+                          :margin-top 0.5rem
+                          :width 14rem
+                          :background "url('./images/catto-bg.webp') 0 0.1rem repeat"
+                          :background-size 17rem)
 
                 ("::marker" :color grey)
 
                 ("@media only screen and (min-width: 860px)" 
-                  (body :width 820px)
+                  (body :width 720px)
                   (header>.avatar>img :width 16rem
                                       :border "1rem ridge rgba(211, 220, 50, .6)"))
 
                 ("@media only screen and (max-width: 640px)" 
                   (header>.spacer :width 40%)
+
+                  (.cattoes :height 2rem
+                            :width 14rem)
+
                   (header>.avatar>img :width 12rem
                                       :border "1rem ridge rgba(211, 220, 50, .6)"))
 
-                ("@media only screen and (max-width: 420px)" 
+                ("@media only screen and (max-width: 540px)" 
+                  (.cattoes :height 2rem
+                            :width 16.7rem
+                            :margin "0.5rem auto")
                   (body :padding-top 0rem)
                   (header :text-align center)
                   (.paragraph>p :margin-left 0rem
@@ -81,7 +93,7 @@
                   (header>.avatar>img :width 100%
                                       :align-self center
                                       :border "1rem ridge rgba(211, 220, 50, .6)"
-                                      :margin-left 1.5rem)
+                                      :margin-left 10%)
 
                   (header :display flex
                           :flex-direction column
@@ -103,13 +115,13 @@
     (:header 
       (:div.info.width-100
         (:h1 "Lappely <3~")
-        ;(:sub 
           (:b (:em "Nyahoi~ y.o | He/Him | Rus") (:br)
               "☃ An another one cute software developer~") (:br) (:br)
           (loop for item in *my-contacts* do 
             (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
                         (format nil "mailto: ~A" (car item)) 
-                        (car item)) (cdr item))))
+                        (car item)) (cdr item)))
+          (:div.cattoes))
       (:div.spacer.width-100)
       (:div.avatar.width-75 
         (:img.avatar-image :attrs (list :src "https://github.com/poipoiPIO.png" :alt "Profile image"))))
@@ -125,8 +137,8 @@
 
   ;; ---------Footer-part---------------
     (:footer 
-      (:sub "Made with secret alien technology" 
-        (:a :attrs (list :href "github.com/poipoiPIO/my-little-site") "Meow~")))))))
+      (:sub "Made with secret alien technology " 
+        (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Meow~")))))))
 
 (defun make-markup ()
   (progn 
