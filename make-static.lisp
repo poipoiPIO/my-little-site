@@ -120,6 +120,7 @@
      (:meta :attrs (list :charset "utf-8"))
      (:meta :attrs (list :name "viewport" :content "width=device-width, initial-scale=1"))
      (:link :attrs (list :type "text/css" :rel "stylesheet" :href "./main.css"))
+     (:link :attrs (list :rel "icon" :type "image/x-icon" :href "./images/favicon-32x32.png"))
      (:title "lappee-site <3"))
  ;; ---------Head-part-ends-----------
 
