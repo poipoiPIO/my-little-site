@@ -3,22 +3,14 @@
 
 (defparameter *my-contacts* '(("https://www.github.com/poipoiPIO" . "Github | " ) 
                               ("https://t.me/lilyape"             . "Telegram | ") 
+                              ("https://www.linkedin.com/in/kirill-gnapovskii-b96b1a292" . "LinkedIn | ") 
                               ("lappee@yahoo.com"                 . "Email!")))
 
 (defparameter *content* 
   `(("About me:" .
-     "Just another software developer. I like functional languages,
-     kitties and have no fear about JS and other frontend stuff.
-     This paragraph will complete a bit later. Nyahoi~")
-    ("Intrested in:" . 
-     #("Functional programming" "Web programming" "Plants growing"  "Compiler-craft"))
-    ("Programming-Stack:" .
-     #("Python" "JS/HTML/CSS" "SML/OCaml/MLs" "C#" "Lisps"))
-    ("Mopclip" .
-     ,(spinneret:with-html-string
-       (:span "Human-friendly monadic parser-combinator library for StandardML.
-               Lightweight and simple DSL library for parsers. "
-       (:a :attrs (list :href "https://github.com/poipoiPIO/mopclip") "Meow~"))))))
+     "A bookworm software engineer curious about in-depth details of the surrounding world.")
+    ("Interested in:" . 
+     #("System Programming" "Software engineering" "Fishing"))))
 
 (defun html-list-tree? (item)
   (and (not (simple-string-p item)) 
@@ -32,28 +24,28 @@
                 (@font-face :font-family "mplus" 
                            :src "url(./fonts/mplus.ttf)")
 
-                (html :background-image "url('./images/bg.png')"
-                      :padding "5% 5%"
+                (body :background-image "url('./images/bg.png')"
+                      :padding "min(5vw, 5vh)"
+                      :display flex
+                      :justify-content center
+                      :align-items center
                       :background-repeat repeat) 
 
-                (body :font-family mplus 
-                      :font-size 18px 
-                      :margin "4% auto"
-                      :padding "9px 5px 15px" 
+                (.wrapper :font-family mplus 
+                      :font-size 14px 
+                      :padding "min(1vw, 1vh)" 
                       :background-color "#ffffe0"
                       :opacity "0.9"
+                      :width 70vw
                       :border "0.75rem ridge rgba(211, 220, 50, .6)")
 
                 (header :display flex
-                        :justify-content space-between
+                        :gap 5vw
                         :flex-direction row
                         :padding "0.5rem 1rem"
                         :font-family pf7)
-                (header>.info
-                        :width 100%
-                        :margin-right 2rem)
 
-                (header>.avatar>img :width 16rem
+                (header>.avatar>img :width 14rem
                                     :border "1rem ridge rgba(211, 220, 50, .6)")
 
                 (footer :text-align right)
@@ -78,25 +70,16 @@
 
                 ("::marker" :color grey)
 
-                ("@media only screen and (min-width: 860px)" 
-                  (body :width 720px)
-                  (header>.avatar>img :width 16rem
-                                      :border "1rem ridge rgba(211, 220, 50, .6)"))
-
-                ("@media only screen and (max-width: 670px)" 
-                  (header>.spacer :width 40%)
-
-                  (.cattoes :height 2rem
-                            :width 14rem)
-
-                  (header>.avatar>img :width 13rem
+                ("@media only screen and (min-width: 810px)" 
+                  (.wrapper :width 62vw :max-width 540px)
+                  (header>.avatar>img :width 12rem
                                       :border "1rem ridge rgba(211, 220, 50, .6)"))
 
                 ("@media only screen and (max-width: 590px)" 
                   (.cattoes :height 2rem
                             :width 16.7rem
                             :margin "0.5rem auto")
-                  (body :padding-top 0rem)
+                  (.wrapper :padding-top 0rem :width 85vw)
                   (header :text-align center)
                   (.paragraph>p :margin-left 0rem
                                 :text-indent 2em
@@ -105,7 +88,7 @@
                                   :display "flex"
                                   :flex-direction "row"
                                   :justify-content "center")
-                  (header>.avatar>img :width 85%
+                  (header>.avatar>img :width 70vw
                                       :align-self center
                                       :border "1rem ridge rgba(211, 220, 50, .6)")
 
@@ -126,34 +109,35 @@
 
  ;; ---------Header-part--------------
    (:body 
-    (:header 
-      (:div.info
-        (:h1 "Lappely <3~")
-          (:b (:em "Nyahoi~ y.o | He/Him | Rus") (:br)
-              "☃ Another one cute software developer~") (:br) (:br)
-          (loop for item in *my-contacts* do 
-            (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
-                        (format nil "mailto: ~A" (car item)) 
-                        (car item)) (cdr item)))
-          (:div.cattoes))
-      (:div.avatar 
-        (:img.avatar-image :attrs (list :src "https://github.com/poipoiPIO.png" :alt "Profile image"))))
+    (:div.wrapper
+      (:header 
+        (:div.info
+          (:h1 "Lappely")
+            (:b (:em "19 y.o | He/Him | Rus") (:br)
+                "☃ Somehow a software engineer!") (:br) (:br)
+            (loop for item in *my-contacts* do 
+              (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
+                          (format nil "mailto: ~A" (car item)) 
+                          (car item)) (cdr item)))
+            (:div.cattoes))
+        (:div.avatar 
+          (:img.avatar-image :attrs (list :src "https://github.com/poipoiPIO.png" :alt "Profile image"))))
 
-  ;; --------Section-part----------------
-    (:section (loop for item in *content* do
-      (:div.paragraph
-        (:h4 (:span.sharp "#") 
-             (car item)) ; car is the head of paragraph 
-        (if (html-list-tree? (cdr item))
-          (:ul (loop 
-            for paragraph across (cdr item)
-              do (:li paragraph)))
-          (:p (:raw (cdr item)))))))
+    ;; --------Section-part----------------
+      (:section (loop for item in *content* do
+        (:div.paragraph
+          (:h4 (:span.sharp "#") 
+              (car item)) ; car is the head of paragraph 
+          (if (html-list-tree? (cdr item))
+            (:ul (loop 
+              for paragraph across (cdr item)
+                do (:li paragraph)))
+            (:p (:raw (cdr item)))))))
 
-  ;; ---------Footer-part---------------
-    (:footer 
-      (:sub "Site made with secret alien technology " 
-        (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Meow~")))))))
+    ;; ---------Footer-part---------------
+      (:footer 
+        (:sub "Site made with secret alien technology " 
+          (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Link!"))))))))
 
 (defun make-markup ()
   (progn 
