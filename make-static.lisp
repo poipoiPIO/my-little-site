@@ -40,8 +40,8 @@
                       :border "0.75rem ridge rgba(211, 220, 50, .6)")
 
                 (header :display flex
-                        :gap 5vw
                         :flex-direction row
+                        :justify-content space-between
                         :padding "0.5rem 1rem"
                         :font-family pf7)
 
