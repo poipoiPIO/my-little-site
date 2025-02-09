@@ -1,5 +1,8 @@
 (in-package cl-user)
-(ql:quickload '(:cl-css :spinneret :str))
+(ql:quickload '(:cl-css :spinneret :str :ningle :clack :lack))
+
+(defvar *app* (make-instance 'ningle:app))
+(defvar *counter* 0)
 
 (defparameter *my-contacts* '(("https://www.github.com/poipoiPIO" . "Github | " ) 
                               ("https://t.me/lilyape"             . "Telegram | ") 
@@ -9,7 +12,7 @@
 (defparameter *content* 
   `(("About me:" .
      "A bookworm software engineer curious about in-depth details of the surrounding world.")
-    ("Interested in:" . 
+    ("Things I like:" . 
      #("System Programming" "Software engineering" "Fishing"))))
 
 (defun html-list-tree? (item)
@@ -48,7 +51,7 @@
                 (header>.avatar>img :width 14rem
                                     :border "1rem ridge rgba(211, 220, 50, .6)")
 
-                (footer :text-align right)
+                (footer :display flex :justify-content "space-between")
                 (a :text-decoration none)
                 (h1 :margin-bottom 8px)
                 (h4 :margin-bottom 0.3rem)
@@ -98,12 +101,12 @@
                           :font-family pf7)
                   (.spacer :height 1rem)))))
 
-(defvar *html* (spinneret:with-html-string (:html 
+(defun get-html-string (counter) (spinneret:with-html-string (:html 
    (:head 
      (:meta :attrs (list :charset "utf-8"))
      (:meta :attrs (list :name "viewport" :content "width=device-width, initial-scale=1"))
-     (:link :attrs (list :type "text/css" :rel "stylesheet" :href "./main.css"))
-     (:link :attrs (list :rel "icon" :type "image/x-icon" :href "./images/favicon-32x32.png"))
+     (:link :attrs (list :type "text/css" :rel "stylesheet" :href "./static/main.css"))
+     (:link :attrs (list :rel "icon" :type "image/x-icon" :href "./static/images/favicon-32x32.png'"))
      (:title "lappee-site <3"))
  ;; ---------Head-part-ends-----------
 
@@ -136,10 +139,21 @@
 
     ;; ---------Footer-part---------------
       (:footer 
+        (:sub (format nil "You are ~Dth visitor" counter))
         (:sub "Site made with secret alien technology " 
           (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Link!"))))))))
 
-(defun make-markup ()
-  (progn 
-    (str:to-file "./index.html" *html*)
-    (str:to-file "./main.css" *css*)))
+(defun make-markup () (str:to-file "./static/main.css" *css*))
+
+(setf (ningle:route *app* "/") #'(lambda (_) 
+  (progn (setf *counter* (+ *counter* 1))
+         (get-html-string *counter*))))
+
+(defun main (port)
+  (progn (clack:clackup 
+  (lack:builder
+    :session
+    (:static :path "/static/"
+             :root #P"./static/")
+              *app*) :port port)
+  (format t "Server is started on port: ~D" port)))

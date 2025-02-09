@@ -5,9 +5,9 @@
   <meta name=viewport
         content="width=device-width, initial-scale=1">
   <link type=text/css rel=stylesheet
-        href=./main.css>
+        href="{{ url_for('static', filename='main.css') }}">
   <link rel=icon type=image/x-icon
-        href=./images/favicon-32x32.png>
+        href="{{ url_for('static', filename='./images/favicon-32x32.png') }}">
   <title>lappee-site &lt;3</title>
  </head>
  <body>
@@ -34,7 +34,7 @@
      <p>A bookworm software engineer curious about in-depth details of the surrounding world.
     </div>
     <div class=paragraph>
-     <h4><span class=sharp>#</span>Interested in:</h4>
+     <h4><span class=sharp>#</span>Things I like:</h4>
      <ul>
       <li>System Programming
       <li>Software engineering
@@ -43,8 +43,8 @@
     </div>
    </section>
    <footer>
-    <sub>Site made with secret alien technology <a
-     href=https://www.github.com/poipoiPIO/my-little-site>Link!</a></sub>
+    <sub>You are {{views}}th visitor</sub><sub>Site made with secret alien technology 
+     <a href=https://www.github.com/poipoiPIO/my-little-site>Link!</a></sub>
    </footer>
   </div>
  </body>
