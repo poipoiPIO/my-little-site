@@ -29,9 +29,6 @@
 
                 (body :background-image "url('./images/bg.png')"
                       :padding "min(5vw, 5vh)"
-                      :display flex
-                      :justify-content center
-                      :align-items center
                       :background-repeat repeat) 
 
                 (.wrapper :font-family mplus 
@@ -45,16 +42,23 @@
                 (header :display flex
                         :flex-direction row
                         :justify-content space-between
+                        :gap 1rem
                         :padding "0.5rem 1rem"
                         :font-family pf7)
 
-                (header>.avatar>img :width 14rem
+                (header>.avatar>img :width 90%
                                     :border "1rem ridge rgba(211, 220, 50, .6)")
 
                 (footer :display flex :justify-content "space-between")
+                (.right-footer :text-align end)
                 (a :text-decoration none)
                 (h1 :margin-bottom 8px)
                 (h4 :margin-bottom 0.3rem)
+
+                (.body :display flex
+                       :align-items center
+                       :justify-content center)
+
                 (.width-100 :width 100%)
                 (.width-75  :width 75%)
                 (.logo      :text-align "left")
@@ -106,42 +110,44 @@
      (:meta :attrs (list :charset "utf-8"))
      (:meta :attrs (list :name "viewport" :content "width=device-width, initial-scale=1"))
      (:link :attrs (list :type "text/css" :rel "stylesheet" :href "./static/main.css"))
+     (:link :attrs (list :rel "prefetch" :href "https://avatars.githubusercontent.com/u/82707867"))
      (:link :attrs (list :rel "icon" :type "image/x-icon" :href "./static/images/favicon-32x32.png'"))
      (:title "lappee-site <3"))
  ;; ---------Head-part-ends-----------
 
  ;; ---------Header-part--------------
    (:body 
-    (:div.wrapper
-      (:header 
-        (:div.info
-          (:h1 "Lappely")
-            (:b (:em "19 y.o | He/Him | Rus") (:br)
-                "☃ Somehow a software engineer!") (:br) (:br)
-            (loop for item in *my-contacts* do 
-              (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
-                          (format nil "mailto: ~A" (car item)) 
-                          (car item)) (cdr item)))
-            (:div.cattoes))
-        (:div.avatar 
-          (:img.avatar-image :attrs (list :src "https://github.com/poipoiPIO.png" :alt "Profile image"))))
+    (:div.body
+      (:div.wrapper
+        (:header 
+          (:div.info
+            (:h1 "Lappely")
+              (:b (:em "19 y.o | He/Him | Rus") (:br)
+                  "☃ Somehow a software engineer!") (:br) (:br)
+              (loop for item in *my-contacts* do 
+                (:a :href (if (str:contains? "email" (cdr item) :ignore-case t) 
+                            (format nil "mailto: ~A" (car item)) 
+                            (car item)) (cdr item)))
+              (:div.cattoes))
+          (:div.avatar 
+            (:img.avatar-image :attrs (list :src "https://avatars.githubusercontent.com/u/82707867" :alt "Profile image"))))
 
-    ;; --------Section-part----------------
-      (:section (loop for item in *content* do
-        (:div.paragraph
-          (:h4 (:span.sharp "#") 
-              (car item)) ; car is the head of paragraph 
-          (if (html-list-tree? (cdr item))
-            (:ul (loop 
-              for paragraph across (cdr item)
-                do (:li paragraph)))
-            (:p (:raw (cdr item)))))))
+      ;; --------Section-part----------------
+        (:section (loop for item in *content* do
+          (:div.paragraph
+            (:h4 (:span.sharp "#") 
+                (car item)) ; car is the head of paragraph 
+            (if (html-list-tree? (cdr item))
+              (:ul (loop 
+                for paragraph across (cdr item)
+                  do (:li paragraph)))
+              (:p (:raw (cdr item)))))))
 
-    ;; ---------Footer-part---------------
-      (:footer 
-        (:sub (format nil "You are our very ~Dth visitor!" counter))
-        (:sub "Site made with secret alien technology " 
-          (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Link!"))))))))
+      ;; ---------Footer-part---------------
+        (:footer 
+          (:sub (format nil "You are our very ~Dth visitor!" counter))
+          (:sub.right-footer "Site made with secret alien technology " 
+            (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Link!")))))))))
 
 (defun make-markup () (str:to-file "./static/main.css" *css*))
 

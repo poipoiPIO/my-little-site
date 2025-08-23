@@ -1,14 +1,16 @@
 @font-face { font-family: gdk9; src: url(./fonts/gdk9.ttf); }
 @font-face { font-family: pf7; src: url(./fonts/pf7.ttf); }
 @font-face { font-family: mplus; src: url(./fonts/mplus.ttf); }
-body { background-image: url('./images/bg.png'); padding: min(5vw, 5vh); display: flex; justify-content: center; align-items: center; background-repeat: repeat; }
+body { background-image: url('./images/bg.png'); padding: min(5vw, 5vh); background-repeat: repeat; }
 .wrapper { font-family: mplus; font-size: 14px; padding: min(1vw, 1vh); background-color: #ffffe0; opacity: 0.9; width: 70vw; border: 0.75rem ridge rgba(211, 220, 50, .6); }
-header { display: flex; flex-direction: row; justify-content: space-between; padding: 0.5rem 1rem; font-family: pf7; }
-header>.avatar>img { width: 14rem; border: 1rem ridge rgba(211, 220, 50, .6); }
+header { display: flex; flex-direction: row; justify-content: space-between; gap: 1rem; padding: 0.5rem 1rem; font-family: pf7; }
+header>.avatar>img { width: 90%; border: 1rem ridge rgba(211, 220, 50, .6); }
 footer { display: flex; justify-content: space-between; }
+.right-footer { text-align: end; }
 a { text-decoration: none; }
 h1 { margin-bottom: 8px; }
 h4 { margin-bottom: 0.3rem; }
+.body { display: flex; align-items: center; justify-content: center; }
 .width-100 { width: 100%; }
 .width-75 { width: 75%; }
 .logo { text-align: left; }
