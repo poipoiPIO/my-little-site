@@ -139,7 +139,7 @@
 
     ;; ---------Footer-part---------------
       (:footer 
-        (:sub (format nil "You are ~Dth visitor" counter))
+        (:sub (format nil "You are our very ~Dth visitor!" counter))
         (:sub "Site made with secret alien technology " 
           (:a :attrs (list :href "https://www.github.com/poipoiPIO/my-little-site") "Link!"))))))))
 
@@ -147,13 +147,27 @@
 
 (setf (ningle:route *app* "/") #'(lambda (_) 
   (progn (setf *counter* (+ *counter* 1))
+         (print "hanlding connection")
          (get-html-string *counter*))))
 
 (defun main (port)
   (progn (clack:clackup 
-  (lack:builder
-    :session
-    (:static :path "/static/"
-             :root #P"./static/")
-              *app*) :port port)
-  (format t "Server is started on port: ~D" port)))
+    (lack:builder
+      :session
+      (:static :path "/static/"
+               :root #P"./static/")
+                *app*) :address "0.0.0.0" :port port :debug nil)
+  (format t "Server is started on port: ~D" port)
+
+    (handler-case (bt:join-thread (find-if (lambda (th) (search "hunchentoot" (bt:thread-name th))) (bt:all-threads)))
+      (#+sbcl sb-sys:interactive-interrupt
+        #+ccl  ccl:interrupt-signal-condition
+        #+clisp system::simple-interrupt-condition
+        #+ecl ext:interactive-interrupt
+        #+allegro excl:interrupt-signal
+        () (progn
+             (format *error-output* "Aborting.~&")
+             (clack:stop *app*)
+             (uiop:quit)))
+      (error (c) (format t "Woops, an unknown error occured:~&~a~&" c)))))
+
