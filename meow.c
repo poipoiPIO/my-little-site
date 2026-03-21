@@ -811,6 +811,7 @@ static int render_marquee_entries(Arena *arena, const MarqueeEntry *entries,
                                   size_t count, char *out, size_t out_size) {
   size_t i;
   size_t used = 0;
+  const char *separator = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   char *escaped_nickname;
   char *escaped_message;
 
@@ -839,9 +840,10 @@ static int render_marquee_entries(Arena *arena, const MarqueeEntry *entries,
       continue;
     }
 
-    written = snprintf(
-        out + used, out_size - used, "%s<span class=\"sharp\">%s</span>: %s",
-        used == 0 ? "" : " | ", escaped_nickname, escaped_message);
+    written = snprintf(out + used, out_size - used,
+                       "%s<span class=\"sharp\">%s</span>: %s",
+                       used == 0 ? "" : separator, escaped_nickname,
+                       escaped_message);
     if (written < 0 || (size_t)written >= out_size - used) {
       break;
     }
