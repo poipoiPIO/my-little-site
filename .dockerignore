@@ -1,0 +1,11 @@
+
+.git
+.gitignore
+.dockerignore
+README.md
+*.log
+tmp/
+.roswell/cache/
+.roswell/archives/
+.roswell/src/
+
