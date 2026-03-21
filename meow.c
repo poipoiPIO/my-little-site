@@ -897,6 +897,133 @@ static void get_client_ip(const struct sockaddr *addr, char *out,
   }
 }
 
+static int is_valid_ip_literal(const char *ip) {
+  struct in_addr addr4;
+  struct in6_addr addr6;
+  return inet_pton(AF_INET, ip, &addr4) == 1 ||
+         inet_pton(AF_INET6, ip, &addr6) == 1;
+}
+
+static int copy_trimmed_token(const char *src, size_t src_len, char *dst,
+                              size_t dst_size) {
+  size_t start = 0;
+  size_t end = src_len;
+  size_t out_len;
+
+  if (dst_size == 0) {
+    return -1;
+  }
+
+  while (start < src_len && isspace((unsigned char)src[start])) {
+    start++;
+  }
+  while (end > start && isspace((unsigned char)src[end - 1])) {
+    end--;
+  }
+
+  out_len = end - start;
+  if (out_len == 0 || out_len + 1 > dst_size) {
+    return -1;
+  }
+
+  memcpy(dst, src + start, out_len);
+  dst[out_len] = '\0';
+  return 0;
+}
+
+static int find_header_value(const char *request, size_t headers_end,
+                             const char *header_name,
+                             const char **out_value_start,
+                             size_t *out_value_len) {
+  const char *p = request;
+  const char *end = request + headers_end;
+  size_t header_name_len = strlen(header_name);
+
+  while (p < end && *p != '\n') {
+    p++;
+  }
+  if (p < end) {
+    p++;
+  }
+
+  while (p < end) {
+    const char *line_end = p;
+    size_t line_len;
+    const char *value_start;
+
+    while (line_end < end && *line_end != '\n') {
+      line_end++;
+    }
+
+    line_len = (size_t)(line_end - p);
+    if (line_len > 0 && p[line_len - 1] == '\r') {
+      line_len--;
+    }
+    if (line_len == 0) {
+      break;
+    }
+
+    if (line_len > header_name_len &&
+        strncasecmp(p, header_name, header_name_len) == 0 &&
+        p[header_name_len] == ':') {
+      value_start = p + header_name_len + 1;
+      while (value_start < p + line_len &&
+             isspace((unsigned char)*value_start)) {
+        value_start++;
+      }
+
+      *out_value_start = value_start;
+      *out_value_len = (size_t)((p + line_len) - value_start);
+      return 0;
+    }
+
+    p = line_end < end ? line_end + 1 : end;
+  }
+
+  return -1;
+}
+
+static void resolve_client_ip(const char *request, size_t headers_end,
+                              const char *fallback_ip, char *out,
+                              size_t out_size) {
+  const char *value_start = NULL;
+  size_t value_len = 0;
+  char candidate[MAX_IP_LEN];
+
+  if (out_size == 0) {
+    return;
+  }
+
+  if (find_header_value(request, headers_end, "X-Forwarded-For", &value_start,
+                        &value_len) == 0) {
+    const char *comma = memchr(value_start, ',', value_len);
+    size_t first_len =
+        comma != NULL ? (size_t)(comma - value_start) : value_len;
+
+    if (copy_trimmed_token(value_start, first_len, candidate,
+                           sizeof(candidate)) == 0 &&
+        is_valid_ip_literal(candidate)) {
+      strncpy(out, candidate, out_size - 1);
+      out[out_size - 1] = '\0';
+      return;
+    }
+  }
+
+  if (find_header_value(request, headers_end, "X-Real-IP", &value_start,
+                        &value_len) == 0) {
+    if (copy_trimmed_token(value_start, value_len, candidate,
+                           sizeof(candidate)) == 0 &&
+        is_valid_ip_literal(candidate)) {
+      strncpy(out, candidate, out_size - 1);
+      out[out_size - 1] = '\0';
+      return;
+    }
+  }
+
+  strncpy(out, fallback_ip, out_size - 1);
+  out[out_size - 1] = '\0';
+}
+
 /* ==================== Markup Fragments ==================== */
 #define BUILD_CONTACTS()                                                       \
   CT_TAG_ATTR("a", _CT_ATTR("href", "https://www.github.com/poipoiPIO"),       \
@@ -1756,9 +1883,9 @@ static int start_server(int port) {
     if (client_fd < 0)
       continue;
 
+    char peer_ip[MAX_IP_LEN];
     char client_ip[MAX_IP_LEN];
-    get_client_ip((struct sockaddr *)&client_addr, client_ip,
-                  sizeof(client_ip));
+    get_client_ip((struct sockaddr *)&client_addr, peer_ip, sizeof(peer_ip));
 
     char request[REQUEST_BUF_SIZE];
     size_t request_len = 0;
@@ -1769,6 +1896,10 @@ static int start_server(int port) {
       close(client_fd);
       continue;
     }
+
+    resolve_client_ip(request, headers_end, peer_ip, client_ip,
+                      sizeof(client_ip));
+
     process_client_request(client_fd, client_ip, request, request_len,
                            headers_end);
 
