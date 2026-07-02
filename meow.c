@@ -28,6 +28,9 @@
   key1 "=\"" val1 "\" " key2 "=\"" val2 "\""
 #define _CT_ATTR3(key1, val1, key2, val2, key3, val3)                          \
   key1 "=\"" val1 "\" " key2 "=\"" val2 "\" " key3 "=\"" val3 "\""
+#define _CT_ATTR4(key1, val1, key2, val2, key3, val3, key4, val4)              \
+  key1 "=\"" val1 "\" " key2 "=\"" val2 "\" " key3 "=\"" val3 "\" " key4   \
+      "=\"" val4 "\""
 
 #define _CT_CSS_RULE(selector, ...) selector " { " __VA_ARGS__ " }\n"
 #define _CT_CSS_PROP(prop, value) prop ": " value "; "
@@ -1048,7 +1051,22 @@ static void resolve_client_ip(const char *request, size_t headers_end,
       CT_TAG("h4", CT_TAG_CLASS("span", "sharp", "#") "Things I like:")        \
           CT_TAG("ul", CT_TAG("li", "System Programming")                      \
                            CT_TAG("li", "Software engineering")                \
-                               CT_TAG("li", "Fishing")))
+                               CT_TAG("li", "Fishing")))                      \
+  CT_TAG_CLASS(                                                                \
+      "div", "paragraph",                                                      \
+      CT_TAG("h4", CT_TAG_CLASS("span", "sharp", "#") "Fwends:")              \
+          CT_TAG_CLASS(                                                        \
+              "p", "fwends-buttons",                                          \
+              CT_TAG_ATTR(                                                     \
+                  "a",                                                         \
+                  _CT_ATTR3("href", "https://taruu.dev", "target", "_blank",  \
+                            "rel", "noopener noreferrer"),                     \
+                  CT_TAG_SELF(                                                 \
+                      "img",                                                   \
+                      _CT_ATTR4("src", "https://taruu.dev/button.svg",         \
+                                "width", "88", "height", "31", "alt",       \
+                                "Taruu"))                                      \
+                      CT_TAG_CLASS("span", "fwends-label", "Taruu"))))
 
 #define BUILD_PAGE_HEAD()                                                      \
   CT_TAG("head",                                                               \
@@ -1109,7 +1127,7 @@ static void resolve_client_ip(const char *request, size_t headers_end,
                                   CT_TAG("b",                                  \
                                          CT_TAG("em", "19 y.o | He/Him | Rus") \
                                              CT_BR()                            \
-                                             "&#9731; Somehow a software engineer!") \
+                                             "&#9731; A software engineer! Somehow...") \
                                       CT_BR() CT_BR()                          \
                                           "%s"                                 \
                                           CT_TAG_CLASS("div", "cattoes", ""))  \
@@ -1225,6 +1243,13 @@ static void resolve_client_ip(const char *request, size_t headers_end,
   CT_CSS_RULE(".paragraph>p", CT_CSS_PROP("margin-left", "2rem")               \
                                   CT_CSS_PROP("text-indent", "2em")            \
                                       CT_CSS_PROP("margin-right", "2rem"))     \
+  CT_CSS_RULE(".paragraph>.fwends-buttons", CT_CSS_PROP("text-indent", "0"))   \
+  CT_CSS_RULE(".fwends-buttons>a", CT_CSS_PROP("display", "inline-flex")       \
+                                    CT_CSS_PROP("flex-direction", "column")    \
+                                        CT_CSS_PROP("align-items", "center"))  \
+  CT_CSS_RULE(".fwends-label", CT_CSS_PROP("font-family", "pf7")               \
+                                   CT_CSS_PROP("font-size", "11px")            \
+                                       CT_CSS_PROP("margin-top", "0.1rem"))    \
   CT_CSS_RULE(                                                                 \
       ".cattoes",                                                              \
       CT_CSS_PROP("height", "4.2rem") CT_CSS_PROP("margin-top", "0.5rem")      \
