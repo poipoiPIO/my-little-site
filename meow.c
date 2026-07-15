@@ -29,8 +29,8 @@
 #define _CT_ATTR3(key1, val1, key2, val2, key3, val3)                          \
   key1 "=\"" val1 "\" " key2 "=\"" val2 "\" " key3 "=\"" val3 "\""
 #define _CT_ATTR4(key1, val1, key2, val2, key3, val3, key4, val4)              \
-  key1 "=\"" val1 "\" " key2 "=\"" val2 "\" " key3 "=\"" val3 "\" " key4   \
-      "=\"" val4 "\""
+  key1 "=\"" val1 "\" " key2 "=\"" val2 "\" " key3 "=\"" val3 "\" " key4       \
+       "=\"" val4 "\""
 
 #define _CT_CSS_RULE(selector, ...) selector " { " __VA_ARGS__ " }\n"
 #define _CT_CSS_PROP(prop, value) prop ": " value "; "
@@ -523,6 +523,10 @@ static int html_escape_to_buffer(const char *src, char *dst, size_t dst_size) {
   return 0;
 }
 
+static int contains_url_like_text(const char *text) {
+  return strstr(text, "://") != NULL;
+}
+
 static int parse_form_fields(const char *body, size_t body_len, char *nickname,
                              size_t nickname_size, char *message,
                              size_t message_size) {
@@ -843,10 +847,9 @@ static int render_marquee_entries(Arena *arena, const MarqueeEntry *entries,
       continue;
     }
 
-    written = snprintf(out + used, out_size - used,
-                       "%s<span class=\"sharp\">%s</span>: %s",
-                       used == 0 ? "" : separator, escaped_nickname,
-                       escaped_message);
+    written = snprintf(
+        out + used, out_size - used, "%s<span class=\"sharp\">%s</span>: %s",
+        used == 0 ? "" : separator, escaped_nickname, escaped_message);
     if (written < 0 || (size_t)written >= out_size - used) {
       break;
     }
@@ -1051,45 +1054,46 @@ static void resolve_client_ip(const char *request, size_t headers_end,
       CT_TAG("h4", CT_TAG_CLASS("span", "sharp", "#") "Things I like:")        \
           CT_TAG("ul", CT_TAG("li", "System Programming")                      \
                            CT_TAG("li", "Software engineering")                \
-                               CT_TAG("li", "Fishing")))                      \
+                               CT_TAG("li", "Fishing")))                       \
   CT_TAG_CLASS(                                                                \
       "div", "paragraph",                                                      \
-      CT_TAG("h4", CT_TAG_CLASS("span", "sharp", "#") "Fwends:")              \
-          CT_TAG_CLASS(                                                        \
-              "p", "fwends-buttons",                                          \
-              CT_TAG_ATTR(                                                     \
-                  "a",                                                         \
-                  _CT_ATTR3("href", "https://taruu.dev", "target", "_blank",  \
-                            "rel", "noopener noreferrer"),                     \
-                  CT_TAG_SELF(                                                 \
-                      "img",                                                   \
-                      _CT_ATTR4("src", "https://taruu.dev/button.svg",         \
-                                "width", "88", "height", "31", "alt",       \
-                                "Taruu"))                                      \
-                      CT_TAG_CLASS("span", "fwends-label", "Taruu"))))
+      CT_TAG("h4", CT_TAG_CLASS("span", "sharp", "#") "Fwends:") CT_TAG_CLASS( \
+          "p", "fwends-buttons",                                               \
+          CT_TAG_ATTR(                                                         \
+              "a",                                                             \
+              _CT_ATTR3("href", "https://taruu.dev", "target", "_blank",       \
+                        "rel", "noopener noreferrer"),                         \
+              CT_TAG_SELF("img",                                               \
+                          _CT_ATTR4("src", "https://taruu.dev/button.svg",     \
+                                    "width", "88", "height", "31", "alt",      \
+                                    "Taruu"))                                  \
+                  CT_TAG_CLASS("span", "fwends-label", "Taruu"))))
 
 #define BUILD_PAGE_HEAD()                                                      \
-  CT_TAG("head",                                                               \
-         CT_TAG_SELF("meta", _CT_ATTR("charset", "utf-8"))                    \
-             CT_TAG_SELF("meta", _CT_ATTR2("name", "viewport", "content",     \
-                                           "width=device-width, initial-scale=1")) \
-                 CT_TAG_SELF("link",                                           \
-                             _CT_ATTR3("rel", "stylesheet", "type", "text/css", \
-                                       "href", "./static/main.css"))           \
-                     CT_TAG_SELF("link",                                       \
-                                 _CT_ATTR2("rel", "prefetch", "href",          \
-                                           "https://avatars.githubusercontent.com/u/82707867")) \
-                         CT_TAG_SELF("link",                                   \
-                                     _CT_ATTR3("rel", "icon", "type",          \
-                                               "image/x-icon", "href",         \
-                                               "./static/images/favicon-32x32.png")) \
-                             CT_TAG("title", "lappee-site &lt;3"))
+  CT_TAG(                                                                      \
+      "head",                                                                  \
+      CT_TAG_SELF("meta", _CT_ATTR("charset", "utf-8")) CT_TAG_SELF(           \
+          "meta", _CT_ATTR2("name", "viewport", "content",                     \
+                            "width=device-width, initial-scale=1"))            \
+          CT_TAG_SELF("link",                                                  \
+                      _CT_ATTR3("rel", "stylesheet", "type", "text/css",       \
+                                "href", "./static/main.css"))                  \
+              CT_TAG_SELF(                                                     \
+                  "link",                                                      \
+                  _CT_ATTR2(                                                   \
+                      "rel", "prefetch", "href",                               \
+                      "https://avatars.githubusercontent.com/u/82707867"))     \
+                  CT_TAG_SELF("link",                                          \
+                              _CT_ATTR3("rel", "icon", "type", "image/x-icon", \
+                                        "href",                                \
+                                        "./static/images/favicon-32x32.png"))  \
+                      CT_TAG("title", "lappee-site &lt;3"))
 
 #define BUILD_MARQUEE_BAR()                                                    \
   CT_TAG_CLASS("div", "latest-comments",                                       \
                CT_TAG_ATTR("marquee",                                          \
-                           _CT_ATTR3("behavior", "scroll", "direction", "left", \
-                                     "scrollamount", "4"),                     \
+                           _CT_ATTR3("behavior", "scroll", "direction",        \
+                                     "left", "scrollamount", "4"),             \
                            "%s"))
 
 #define BUILD_COMMENT_FLOATER()                                                \
@@ -1099,61 +1103,67 @@ static void resolve_client_ip(const char *request, size_t headers_end,
                    CT_TAG("strong", "Don&#39;t be rude!")                      \
                        CT_TAG_CLASS("div", "comment-warning-subtext",          \
                                     "You only have one attempt in 24h"))       \
-          CT_TAG_ATTR("form",                                                  \
-                      "method=\"post\" action=\"/comment\" class=\"comment-form\"", \
-                      CT_TAG_SELF("input",                                     \
-                                  "type=\"text\" name=\"nickname\" placeholder=\"nickname\" maxlength=\"32\" required") \
-                          CT_TAG_ATTR("textarea",                              \
-                                      "name=\"message\" placeholder=\"your message of the day...!\" maxlength=\"98\" required", \
-                                      "")                                       \
-                          "%s"))
+          CT_TAG_ATTR(                                                         \
+              "form",                                                          \
+              "method=\"post\" action=\"/comment\" class=\"comment-form\"",    \
+              CT_TAG_SELF("input",                                             \
+                          "type=\"text\" name=\"nickname\" "                   \
+                          "placeholder=\"nickname\" maxlength=\"32\" "         \
+                          "pattern=\"^(?!.*://).*$\" "                         \
+                          "title=\"URLs are not allowed\" required")           \
+                  CT_TAG_ATTR("textarea",                                      \
+                              "name=\"message\" placeholder=\"your message "   \
+                              "of the day...!\" maxlength=\"98\" required",    \
+                              "") "%s"))
 
 #define BUILD_CHEER_BLOCK()                                                    \
-  CT_TAG_CLASS("div", "cheer-me-up",                                           \
-               CT_TAG_ATTR("a", _CT_ATTR("href", ""),                          \
-                           CT_TAG_SELF("img",                                  \
-                                       _CT_ATTR2("src", "./static/images/trout.png", \
-                                                 "alt", "CheerMeUp")))         \
-                   CT_TAG("div", "%s"))
+  CT_TAG_CLASS(                                                                \
+      "div", "cheer-me-up",                                                    \
+      CT_TAG_ATTR(                                                             \
+          "a", _CT_ATTR("href", ""),                                           \
+          CT_TAG_SELF("img", _CT_ATTR2("src", "./static/images/trout.png",     \
+                                       "alt", "CheerMeUp")))                   \
+          CT_TAG("div", "%s"))
 
 #define BUILD_MAIN_PANEL()                                                     \
   CT_TAG_CLASS(                                                                \
       "div", "body",                                                           \
       CT_TAG_CLASS(                                                            \
           "div", "wrapper",                                                    \
-          CT_TAG("header",                                                     \
-                 CT_TAG_CLASS("div", "info",                                   \
-                              CT_TAG("h1", "Lappely")                          \
-                                  CT_TAG("b",                                  \
-                                         CT_TAG("em", "19 y.o | He/Him | Rus") \
-                                             CT_BR()                            \
-                                             "&#9731; A software engineer! Somehow...") \
-                                      CT_BR() CT_BR()                          \
-                                          "%s"                                 \
-                                          CT_TAG_CLASS("div", "cattoes", ""))  \
-                     CT_TAG_CLASS("div", "avatar",                             \
-                                  CT_TAG_SELF("img",                           \
-                                              _CT_ATTR3("src",                 \
-                                                        "https://avatars.githubusercontent.com/u/82707867", \
-                                                        "alt", "Profile image", \
-                                                        "class", "avatar-image")))) \
-              CT_TAG("section", "%s")                                          \
-                  CT_TAG("footer",                                             \
-                         CT_TAG("sub", "You are our very %sth visitor!")       \
-                             CT_TAG_CLASS(                                     \
-                                 "sub", "right-footer",                        \
-                                 "This site is made with a forgotten granny technology " \
-                                     CT_TAG_ATTR("a",                          \
-                                                 _CT_ATTR("href",               \
-                                                          "https://www.github.com/poipoiPIO/my-little-site"), \
-                                                 "Link!")))))
+          CT_TAG(                                                              \
+              "header",                                                        \
+              CT_TAG_CLASS(                                                    \
+                  "div", "info",                                               \
+                  CT_TAG("h1", "Lappely") CT_TAG(                              \
+                      "b",                                                     \
+                      CT_TAG("em", "19 y.o | He/Him | Rus")                    \
+                          CT_BR() "&#9731; A software engineer! Somehow...")   \
+                      CT_BR() CT_BR() "%s" CT_TAG_CLASS("div", "cattoes", "")) \
+                  CT_TAG_CLASS(                                                \
+                      "div", "avatar",                                         \
+                      CT_TAG_SELF(                                             \
+                          "img",                                               \
+                          _CT_ATTR3("src",                                     \
+                                    "https://avatars.githubusercontent.com/u/" \
+                                    "82707867",                                \
+                                    "alt", "Profile image", "class",           \
+                                    "avatar-image")))) CT_TAG("section", "%s") \
+              CT_TAG("footer",                                                 \
+                     CT_TAG("sub", "You are our very %sth visitor!")           \
+                         CT_TAG_CLASS(                                         \
+                             "sub", "right-footer",                            \
+                             "This site is made with a forgotten granny "      \
+                             "technology " CT_TAG_ATTR(                        \
+                                 "a",                                          \
+                                 _CT_ATTR("href", "https://www.github.com/"    \
+                                                  "poipoiPIO/my-little-site"), \
+                                 "Link!")))))
 
 #define BUILD_PAGE()                                                           \
-  "<!DOCTYPE html>"                                                            \
-  CT_TAG("html",                                                               \
-         BUILD_PAGE_HEAD()                                                     \
-             CT_TAG("body", "%s" BUILD_COMMENT_FLOATER()                      \
-                                 BUILD_CHEER_BLOCK() BUILD_MAIN_PANEL()))
+  "<!DOCTYPE html>" CT_TAG(                                                    \
+      "html", BUILD_PAGE_HEAD()                                                \
+                  CT_TAG("body", "%s" BUILD_COMMENT_FLOATER()                  \
+                                     BUILD_CHEER_BLOCK() BUILD_MAIN_PANEL()))
 
 /* ==================== Markup Styles ==================== */
 #define BUILD_CSS()                                                            \
@@ -1186,10 +1196,10 @@ static void resolve_client_ip(const char *request, size_t headers_end,
                                               CT_CSS_PROP("width", "17rem")    \
                                                   CT_CSS_PROP("z-index", "4")) \
   CT_CSS_RULE(".comment-warning", CT_CSS_PROP("font-size", "14px")             \
-                                      CT_CSS_PROP("margin-bottom", "0.5rem")  \
+                                      CT_CSS_PROP("margin-bottom", "0.5rem")   \
                                           CT_CSS_PROP("text-align", "center")) \
   CT_CSS_RULE(".comment-warning strong", CT_CSS_PROP("display", "block"))      \
-  CT_CSS_RULE(".comment-warning-subtext",                                       \
+  CT_CSS_RULE(".comment-warning-subtext",                                      \
               CT_CSS_PROP("font-size", "12px")                                 \
                   CT_CSS_PROP("margin-top", "0.1rem"))                         \
   CT_CSS_RULE(".comment-form", CT_CSS_PROP("display", "flex")                  \
@@ -1244,9 +1254,10 @@ static void resolve_client_ip(const char *request, size_t headers_end,
                                   CT_CSS_PROP("text-indent", "2em")            \
                                       CT_CSS_PROP("margin-right", "2rem"))     \
   CT_CSS_RULE(".paragraph>.fwends-buttons", CT_CSS_PROP("text-indent", "0"))   \
-  CT_CSS_RULE(".fwends-buttons>a", CT_CSS_PROP("display", "inline-flex")       \
-                                    CT_CSS_PROP("flex-direction", "column")    \
-                                        CT_CSS_PROP("align-items", "center"))  \
+  CT_CSS_RULE(".fwends-buttons>a",                                             \
+              CT_CSS_PROP("display", "inline-flex")                            \
+                  CT_CSS_PROP("flex-direction", "column")                      \
+                      CT_CSS_PROP("align-items", "center"))                    \
   CT_CSS_RULE(".fwends-label", CT_CSS_PROP("font-family", "pf7")               \
                                    CT_CSS_PROP("font-size", "11px")            \
                                        CT_CSS_PROP("margin-top", "0.1rem"))    \
@@ -1649,8 +1660,7 @@ static int allocate_page_render_buffers(Arena *arena,
 
   if (buffers->page == NULL || buffers->marquee_html == NULL ||
       buffers->contacts == NULL || buffers->content == NULL ||
-      buffers->counter_str == NULL ||
-      buffers->submit_button == NULL) {
+      buffers->counter_str == NULL || buffers->submit_button == NULL) {
     return -1;
   }
 
@@ -1659,8 +1669,7 @@ static int allocate_page_render_buffers(Arena *arena,
 
 static int compose_page_markup(const PageRenderBuffers *buffers,
                                const char *marquee_text, int show_marquee,
-                               int can_submit,
-                               const char **out_page) {
+                               int can_submit, const char **out_page) {
   const char *quote = get_random_quote();
   int written;
 
@@ -1682,7 +1691,8 @@ static int compose_page_markup(const PageRenderBuffers *buffers,
   if (written < 0 || (size_t)written >= CONTENT_BUF_SIZE) {
     return -1;
   }
-  written = snprintf(buffers->counter_str, COUNTER_STR_BUF_SIZE, "%lu", COUNTER);
+  written =
+      snprintf(buffers->counter_str, COUNTER_STR_BUF_SIZE, "%lu", COUNTER);
   if (written < 0 || (size_t)written >= COUNTER_STR_BUF_SIZE) {
     return -1;
   }
@@ -1696,8 +1706,7 @@ static int compose_page_markup(const PageRenderBuffers *buffers,
 
   written = snprintf(buffers->page, PAGE_BUF_SIZE, BUILD_PAGE(),
                      buffers->marquee_html, buffers->submit_button, quote,
-                     buffers->contacts,
-                     buffers->content, buffers->counter_str);
+                     buffers->contacts, buffers->content, buffers->counter_str);
   if (written < 0 || (size_t)written >= PAGE_BUF_SIZE) {
     const char *fallback =
         "<!DOCTYPE html><html><body>Rendering error</body></html>";
@@ -1791,8 +1800,12 @@ static int handle_comment_route(int fd, const RequestContext *ctx) {
     return send_500(fd);
   }
 
-  if (parse_form_fields(ctx->body, ctx->body_len, nickname, MAX_NICKNAME_LEN + 1,
-                        message, MAX_MESSAGE_LEN + 1) != 0) {
+  if (parse_form_fields(ctx->body, ctx->body_len, nickname,
+                        MAX_NICKNAME_LEN + 1, message,
+                        MAX_MESSAGE_LEN + 1) != 0) {
+    return send_redirect(fd, "/");
+  }
+  if (contains_url_like_text(nickname) || contains_url_like_text(message)) {
     return send_redirect(fd, "/");
   }
   if (!can_submit_comment_from_ip(ctx->client_ip, ctx->now)) {
